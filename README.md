@@ -33,19 +33,38 @@ projeto/
 Verifique se está tudo certo:
 
 ```bash
+# Linux / macOS
 php -v
 php -m | grep -E "pdo_sqlite|sqlite3"
+```
+
+```powershell
+# Windows (PowerShell)
+php -v
+php -m | Select-String "pdo_sqlite|sqlite3"
 ```
 
 ### 1. Entre na pasta do projeto
 
 ```bash
+# Linux / macOS
+cd quiz-vintg
+```
+
+```powershell
+# Windows (PowerShell)
 cd quiz-vintg
 ```
 
 ### 2. Inicie o servidor PHP
 
 ```bash
+# Linux / macOS
+php -S localhost:8000
+```
+
+```powershell
+# Windows (PowerShell)
 php -S localhost:8000
 ```
 
