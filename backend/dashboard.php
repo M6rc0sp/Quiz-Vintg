@@ -103,52 +103,98 @@ $profileColors = [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Quiz Vintg</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  body{
-    font-family: 'Inter', system-ui, sans-serif;
-    background: #f5f3ef;
-    color: #17130F;
-    padding: 32px 24px;
+  :root{
+    --red: #35050A;
+    --red-soft: #5A1219;
+    --cream: #FFFFE7;
+    --cream-dim: #F3F3D9;
+    --black: #17130F;
+    --body: #241C17;
+    --brass: #A9824C;
+    --brass-soft: #D8C9A3;
+    --line: rgba(23,19,15,0.14);
   }
-  .container{ max-width:1280px; margin:0 auto; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
 
-  h1{
-    font-size: 28px;
-    font-weight: 600;
+  body{
+    background: var(--cream);
+    color: var(--black);
+    font-family: 'Jost', sans-serif;
+    min-height:100vh;
+    padding: 32px 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container{ max-width:900px; margin:0 auto; }
+
+  .badge-row{ text-align:center; margin-bottom: 20px; }
+  .badge{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--red); color: var(--cream);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 7px 16px;
+  }
+
+  .card{
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 40px 32px 34px;
+    position: relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:12px; left:12px; right:12px; bottom:12px;
+    border: 1px solid var(--brass-soft);
+    pointer-events:none;
+  }
+  .card-header{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    flex-wrap:wrap; gap:12px; margin-bottom: 28px;
+  }
+  .card-header h1{
+    font-family:'Lora', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(23px, 4.2vw, 30px);
+    color: var(--red);
     margin-bottom: 4px;
   }
-  .subtitle{
-    color: #6b655d;
-    font-size: 15px;
-    margin-bottom: 28px;
+  .card-header .subtitle{
+    font-size: 15px; color: var(--body); opacity:0.75;
   }
+  .card-actions{ display:flex; gap:8px; flex-wrap:wrap; }
 
-  /* ---- Stats cards ---- */
+  /* ---- Stats ---- */
   .stats{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
     margin-bottom: 28px;
   }
   .stat-card{
-    background: #fff;
-    border-radius: 10px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 18px 16px;
+    position:relative;
+  }
+  .stat-card::before{
+    content:"";
+    position:absolute;
+    top:6px; left:6px; right:6px; bottom:6px;
+    border: 1px solid var(--brass-soft);
+    pointer-events:none;
   }
   .stat-card .label{
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #8a8379;
-    margin-bottom: 6px;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 4px;
   }
   .stat-card .value{
-    font-size: 28px;
-    font-weight: 700;
+    font-family:'Lora', serif; font-style: italic;
+    font-size: 28px; font-weight: 600;
     line-height: 1.2;
+    color: var(--red);
   }
   .stat-card .value .dot{
     display: inline-block;
@@ -156,6 +202,7 @@ $profileColors = [
     border-radius: 50%;
     margin-right: 6px;
     vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.08);
   }
 
   /* ---- Filters ---- */
@@ -164,61 +211,60 @@ $profileColors = [
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    background: #fff;
-    padding: 16px 20px;
-    border-radius: 10px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
     margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    position:relative;
   }
-  .filters label{ font-size: 13px; color: #555; white-space: nowrap; }
+  .filters label{
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--brass); white-space: nowrap;
+  }
   .filters input, .filters select{
     padding: 8px 12px;
-    border: 1px solid #d6d0c8;
-    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--cream);
+    font-family:'Jost', sans-serif;
     font-size: 14px;
-    font-family: inherit;
-    background: #fff;
-    min-width: 160px;
+    color: var(--body);
+    min-width: 150px;
   }
   .filters input:focus, .filters select:focus{
     outline: none;
-    border-color: #A9824C;
+    border-color: var(--red);
   }
+  .filters input::placeholder{ color: rgba(23,19,15,0.35); }
+
   .btn{
-    padding: 8px 18px;
+    padding: 9px 18px;
     border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: inherit;
+    font-family:'Jost', sans-serif;
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     cursor: pointer;
-    font-weight: 500;
     text-decoration: none;
     display: inline-block;
+    transition: background 0.25s ease;
   }
   .btn-primary{
-    background: #35050A;
-    color: #FFFFE7;
+    background: var(--red); color: var(--cream);
   }
-  .btn-primary:hover{ background: #5A1219; }
+  .btn-primary:hover{ background: var(--red-soft); }
   .btn-outline{
     background: transparent;
-    border: 1px solid #d6d0c8;
-    color: #444;
+    border: 1px solid var(--line);
+    color: var(--black);
   }
-  .btn-outline:hover{ border-color: #A9824C; color: #35050A; }
-  .btn-danger{
-    background: #dc2626;
-    color: #fff;
-  }
-  .btn-danger:hover{ background: #b91c1c; }
-  .btn-sm{ padding: 6px 12px; font-size: 13px; }
+  .btn-outline:hover{ border-color: var(--brass); color: var(--red); }
+  .btn-sm{ padding: 6px 14px; font-size: 11px; }
 
   /* ---- Table ---- */
   .table-wrap{
-    background: #fff;
-    border-radius: 10px;
+    border: 1px solid var(--line);
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    position:relative;
   }
   table{
     width:100%;
@@ -227,39 +273,43 @@ $profileColors = [
   th{
     text-align: left;
     padding: 14px 16px;
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #8a8379;
-    background: #faf9f6;
-    border-bottom: 1px solid #e8e3dc;
+    letter-spacing: 0.14em;
+    color: var(--brass);
+    background: var(--cream-dim);
+    border-bottom: 1px solid var(--line);
     white-space: nowrap;
+    font-weight: 500;
   }
   td{
     padding: 14px 16px;
-    font-size: 14px;
-    border-bottom: 1px solid #f0ece6;
+    font-size: 14.5px;
+    border-bottom: 1px solid var(--line);
     vertical-align: middle;
+    background: var(--cream);
+    color: var(--body);
   }
-  tr:hover td{ background: #faf9f6; }
+  tr:hover td{ background: var(--cream-dim); }
 
   .badge-profile{
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
+    padding: 2px 10px;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: #fff;
     white-space: nowrap;
   }
 
   .action-links a{
-    color: #A9824C;
+    color: var(--brass);
     text-decoration: none;
-    font-size: 13px;
-    margin-right: 10px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
-  .action-links a:hover{ text-decoration: underline; color: #35050A; }
+  .action-links a:hover{ color: var(--red); }
 
   /* ---- Pagination ---- */
   .pagination{
@@ -267,31 +317,37 @@ $profileColors = [
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
-    color: #555;
+    font-size: 13px;
+    color: var(--body);
+    opacity:0.8;
+    background: var(--cream);
+    border-top: 1px solid var(--line);
   }
   .pagination a{
-    color: #35050A;
+    color: var(--red);
     text-decoration: none;
-    padding: 6px 12px;
-    border: 1px solid #d6d0c8;
-    border-radius: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--line);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     margin: 0 2px;
+    transition: border-color 0.2s;
   }
-  .pagination a:hover{ border-color: #A9824C; }
+  .pagination a:hover{ border-color: var(--brass); }
   .pagination .current{
-    background: #35050A;
-    color: #fff;
-    border-color: #35050A;
-    padding: 6px 12px;
-    border-radius: 6px;
+    background: var(--red);
+    color: var(--cream);
+    border-color: var(--red);
+    padding: 5px 10px;
     margin: 0 2px;
+    font-size: 12px;
   }
 
   .empty{
     text-align: center;
     padding: 48px 16px;
-    color: #8a8379;
+    color: var(--body); opacity:0.55;
   }
   .empty p{ font-size: 16px; margin-bottom: 8px; }
 
@@ -300,7 +356,7 @@ $profileColors = [
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(53,5,10,0.45);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -308,145 +364,155 @@ $profileColors = [
   }
   .modal-overlay.active{ display: flex; }
   .modal{
-    background: #fff;
-    border-radius: 12px;
+    background: var(--cream);
+    border: 1px solid var(--line);
     max-width: 640px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     padding: 32px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    position:relative;
   }
-  .modal h2{ font-size: 22px; margin-bottom: 4px; }
+  .modal::before{
+    content:"";
+    position:absolute;
+    top:8px; left:8px; right:8px; bottom:8px;
+    border: 1px solid var(--brass-soft);
+    pointer-events:none;
+  }
+  .modal h2{
+    font-family:'Lora', serif; font-style: italic; font-weight: 500;
+    font-size: 24px; color: var(--red); margin-bottom: 4px;
+  }
   .modal .close{
     float: right;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #8a8379;
+    background: none; border: none;
+    font-size: 26px; cursor: pointer;
+    color: var(--brass); position:relative; z-index:1;
   }
-  .modal .close:hover{ color: #17130F; }
-  .modal-section{ margin-bottom: 20px; }
+  .modal .close:hover{ color: var(--red); }
+  .modal-section{ margin-bottom: 20px; position:relative; z-index:1; }
   .modal-section h3{
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #8a8379;
-    margin-bottom: 8px;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 6px;
   }
-  .modal-section p{ font-size: 15px; line-height: 1.6; }
+  .modal-section p{ font-size: 15px; line-height: 1.6; color: var(--body); }
   .answer-item{
     display: flex;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid #f0ece6;
+    border-bottom: 1px solid var(--line);
     font-size: 14px;
   }
-  .answer-item .q{ color: #555; flex:1; }
-  .answer-item .a{ font-weight: 500; }
+  .answer-item .q{ color: var(--body); opacity:0.75; flex:1; }
+  .answer-item .a{ font-weight: 500; color: var(--red-soft); }
 </style>
 </head>
 <body>
 
 <div class="container">
 
-  <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
-    <div>
-      <h1>📊 Quiz Vintg — Leads</h1>
-      <p class="subtitle">Dashboard de captação de leads</p>
-    </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="export.php<?= $search ? "?search=" . urlencode($search) : '' ?>" class="btn btn-primary">📥 Exportar CSV</a>
-      <button class="btn btn-outline" onclick="window.location.reload()">🔄 Atualizar</button>
-    </div>
+  <div class="badge-row">
+    <span class="badge">✦ Dashboard · Quiz Vintg</span>
   </div>
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-card">
-      <div class="label">Total de Leads</div>
-      <div class="value" style="color:#35050A;"><?= number_format($totalLeads, 0, ',', '.') ?></div>
-    </div>
-    <?php foreach (['A' => 'Clássica', 'B' => 'Ousada', 'C' => 'Vintage', 'D' => 'Romântica'] as $k => $label): ?>
-    <div class="stat-card">
-      <div class="label"><?= $label ?></div>
-      <div class="value">
-        <span class="dot" style="background:<?= $profileColors[$k] ?>"></span>
-        <?= number_format($profileCountsIndexed[$k] ?? 0, 0, ',', '.') ?>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h1>Leads captados</h1>
+        <p class="subtitle">Gerencie os formulários enviados do quiz</p>
+      </div>
+      <div class="card-actions">
+        <a href="export.php<?= $search ? "?search=" . urlencode($search) : '' ?>" class="btn btn-primary">📥 Exportar CSV</a>
+        <button class="btn btn-outline" onclick="window.location.reload()">🔄 Atualizar</button>
       </div>
     </div>
-    <?php endforeach; ?>
-  </div>
 
-  <!-- Filters -->
-  <form class="filters" method="GET">
-    <label>Buscar</label>
-    <input type="text" name="search" placeholder="Nome ou e-mail..." value="<?= htmlspecialchars($search) ?>">
-
-    <label>Perfil</label>
-    <select name="profile">
-      <option value="">Todos</option>
-      <?php foreach ($profileNames as $k => $n): ?>
-        <option value="<?= $k ?>" <?= $profile === $k ? 'selected' : '' ?>><?= $n ?></option>
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">Total de Leads</div>
+        <div class="value"><?= number_format($totalLeads, 0, ',', '.') ?></div>
+      </div>
+      <?php foreach (['A' => 'Clássica', 'B' => 'Ousada', 'C' => 'Vintage', 'D' => 'Romântica'] as $k => $label): ?>
+      <div class="stat-card">
+        <div class="label"><?= $label ?></div>
+        <div class="value">
+          <span class="dot" style="background:<?= $profileColors[$k] ?>"></span>
+          <?= number_format($profileCountsIndexed[$k] ?? 0, 0, ',', '.') ?>
+        </div>
+      </div>
       <?php endforeach; ?>
-    </select>
+    </div>
 
-    <label>De</label>
-    <input type="date" name="date_from" value="<?= htmlspecialchars($dateFrom) ?>">
+    <!-- Filters -->
+    <form class="filters" method="GET">
+      <label>Buscar</label>
+      <input type="text" name="search" placeholder="Nome ou e-mail..." value="<?= htmlspecialchars($search) ?>">
 
-    <label>Até</label>
-    <input type="date" name="date_to" value="<?= htmlspecialchars($dateTo) ?>">
+      <label>Perfil</label>
+      <select name="profile">
+        <option value="">Todos</option>
+        <?php foreach ($profileNames as $k => $n): ?>
+          <option value="<?= $k ?>" <?= $profile === $k ? 'selected' : '' ?>><?= $n ?></option>
+        <?php endforeach; ?>
+      </select>
 
-    <button type="submit" class="btn btn-primary">Filtrar</button>
-    <?php if ($search || $profile || $dateFrom || $dateTo): ?>
-      <a href="dashboard.php" class="btn btn-outline">Limpar</a>
-    <?php endif; ?>
-  </form>
+      <label>De</label>
+      <input type="date" name="date_from" value="<?= htmlspecialchars($dateFrom) ?>">
 
-  <!-- Table -->
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nome</th>
-          <th>E-mail</th>
-          <th>Perfil</th>
-          <th>Data</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php if (count($leads) === 0): ?>
-        <tr><td colspan="6">
-          <div class="empty">
-            <p>😕 Nenhum lead encontrado</p>
-            <p style="font-size:14px;">Os dados aparecerão aqui quando alguém preencher o quiz.</p>
-          </div>
-        </td></tr>
-        <?php else: ?>
-          <?php foreach ($leads as $lead): ?>
+      <label>Até</label>
+      <input type="date" name="date_to" value="<?= htmlspecialchars($dateTo) ?>">
+
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+      <?php if ($search || $profile || $dateFrom || $dateTo): ?>
+        <a href="dashboard.php" class="btn btn-outline">Limpar</a>
+      <?php endif; ?>
+    </form>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
           <tr>
-            <td style="color:#8a8379; font-size:13px;"><?= $lead['id'] ?></td>
-            <td><strong><?= htmlspecialchars($lead['name']) ?></strong></td>
-            <td><a href="mailto:<?= htmlspecialchars($lead['email']) ?>" style="color:#A9824C;text-decoration:none;"><?= htmlspecialchars($lead['email']) ?></a></td>
-            <td>
-              <span class="badge-profile" style="background:<?= $profileColors[$lead['profile_key']] ?>">
-                <?= htmlspecialchars($lead['profile_key']) ?> — <?= htmlspecialchars($lead['profile_name']) ?>
-              </span>
-            </td>
-            <td style="white-space:nowrap; color:#6b655d; font-size:13px;">
-              <?= date('d/m/Y H:i', strtotime($lead['created_at'])) ?>
-            </td>
-            <td class="action-links">
-              <a href="#" onclick="viewLead(<?= $lead['id'] ?>); return false;">👁 Ver</a>
-            </td>
+            <th>#</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Perfil</th>
+            <th>Data</th>
+            <th>Ações</th>
           </tr>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <?php if (count($leads) === 0): ?>
+          <tr><td colspan="6">
+            <div class="empty">
+              <p>😕 Nenhum lead encontrado</p>
+              <p style="font-size:14px;">Os dados aparecerão aqui quando alguém preencher o quiz.</p>
+            </div>
+          </td></tr>
+          <?php else: ?>
+            <?php foreach ($leads as $lead): ?>
+            <tr>
+              <td style="color:var(--body); opacity:0.5; font-size:13px;"><?= $lead['id'] ?></td>
+              <td><strong><?= htmlspecialchars($lead['name']) ?></strong></td>
+              <td><a href="mailto:<?= htmlspecialchars($lead['email']) ?>" style="color:var(--brass);text-decoration:none;"><?= htmlspecialchars($lead['email']) ?></a></td>
+              <td>
+                <span class="badge-profile" style="background:<?= $profileColors[$lead['profile_key']] ?>">
+                  <?= htmlspecialchars($lead['profile_key']) ?> — <?= htmlspecialchars($lead['profile_name']) ?>
+                </span>
+              </td>
+              <td style="white-space:nowrap; opacity:0.65; font-size:13px;">
+                <?= date('d/m/Y H:i', strtotime($lead['created_at'])) ?>
+              </td>
+              <td class="action-links">
+                <a href="#" onclick="viewLead(<?= $lead['id'] ?>); return false;">👁 Ver</a>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </tbody>
+      </table>
 
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
@@ -465,8 +531,9 @@ $profileColors = [
       </div>
     </div>
     <?php endif; ?>
-  </div>
-</div>
+    </div><!-- /table-wrap -->
+  </div><!-- /card -->
+</div><!-- /container -->
 
 <!-- Modal Lead Detail -->
 <div class="modal-overlay" id="modalOverlay">
