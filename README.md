@@ -37,12 +37,10 @@ php -v
 php -m | grep -E "pdo_sqlite|sqlite3"
 ```
 
-### 1. Clone ou copie o projeto
+### 1. Entre na pasta do projeto
 
 ```bash
-cd /caminho/para/sua/pasta
-git clone <url-do-repositorio> quiz-vintg
-cd quiz-vintg
+cd /home/m6rc0sp/Documentos/MVL/projeto
 ```
 
 ### 2. Inicie o servidor PHP
