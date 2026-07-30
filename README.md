@@ -40,7 +40,7 @@ php -m | grep -E "pdo_sqlite|sqlite3"
 ### 1. Entre na pasta do projeto
 
 ```bash
-cd /home/m6rc0sp/Documentos/MVL/projeto
+cd quiz-vintg
 ```
 
 ### 2. Inicie o servidor PHP
