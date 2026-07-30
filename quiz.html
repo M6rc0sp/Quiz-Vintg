@@ -1,0 +1,946 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintg — Encontre o relógio perfeito para você</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red: #35050A;
+    --red-soft: #5A1219;
+    --cream: #FFFFE7;
+    --cream-dim: #F3F3D9;
+    --black: #17130F;
+    --body: #241C17;
+    --brass: #A9824C;
+    --brass-soft: #D8C9A3;
+    --line: rgba(23,19,15,0.14);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background: var(--cream);
+    color: var(--black);
+    font-family: 'Jost', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .stage{ width:100%; max-width:520px; }
+
+  /* ---------- Bracelet progress ---------- */
+  .bracelet-wrap{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-wrap: wrap;
+    gap:6px;
+    margin-bottom: 8px;
+  }
+  .bracelet-wrap.active{ display:flex; }
+
+  .link{
+    width: 13px; height:13px;
+    border-radius:50%;
+    border: 1.5px solid var(--brass-soft);
+    background: transparent;
+    transition: background 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
+  }
+  .link.filled{ background: var(--brass); border-color: var(--brass); transform: scale(1.08); }
+  .link.current{ border-color: var(--red); box-shadow: 0 0 0 3px rgba(53,5,10,0.08); }
+
+  .progress-label{
+    text-align:center;
+    font-family:'Lora', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--red-soft);
+    margin-bottom: 24px;
+    display:none;
+  }
+  .progress-label.active{ display:block; }
+
+  .badge{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--red); color: var(--cream);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 7px 16px; margin: 0 auto 20px;
+  }
+  .badge-row{ text-align:center; }
+
+  .card{
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 40px 32px 34px;
+    position: relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:12px; left:12px; right:12px; bottom:12px;
+    border: 1px solid var(--brass-soft);
+    pointer-events:none;
+  }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brass);
+    text-align:center;
+    margin-bottom: 16px;
+  }
+
+  h1{
+    font-family:'Lora', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(23px, 4.2vw, 32px);
+    line-height: 1.3;
+    text-align:center;
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+
+  h1 .highlight{
+    background: linear-gradient(180deg, transparent 64%, var(--brass-soft) 64%);
+    padding: 0 3px;
+  }
+
+  .sub{
+    text-align:center;
+    font-size: 16px;
+    line-height:1.6;
+    color: var(--body);
+    opacity:0.85;
+    max-width: 380px;
+    margin: 0 auto 28px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap:11px; }
+
+  .option{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding: 15px 18px;
+    border:1px solid var(--line);
+    background: transparent;
+    cursor:pointer;
+    text-align:left;
+    font-size: 15.5px;
+    line-height:1.4;
+    color: var(--body);
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .option:hover{ border-color: var(--brass); background: rgba(169,130,76,0.07); }
+  .option.selected{ border-color: var(--red); background: rgba(53,5,10,0.05); }
+
+  .option-icon{
+    width: 30px; height:30px;
+    border-radius:50%;
+    border: 1px solid var(--brass-soft);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    font-size: 12px;
+    font-family:'Lora', serif;
+    color: var(--brass);
+    text-transform: uppercase;
+  }
+  .option.selected .option-icon{ background: var(--red); border-color: var(--red); color: var(--cream); }
+
+  .nav{ display:flex; justify-content:space-between; align-items:center; margin-top: 28px; }
+
+  .btn-text{
+    background:none; border:none;
+    font-size: 13.5px; letter-spacing: 0.05em;
+    color: var(--black); opacity: 0.55; cursor:pointer;
+    text-transform: uppercase;
+  }
+  .btn-text:hover{ opacity:0.85; }
+  .btn-text:disabled{ opacity:0.2; cursor:default; }
+
+  .btn-primary{
+    background: var(--red); color: var(--cream); border: none;
+    padding: 14px 30px; font-size: 13.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; cursor:pointer;
+    transition: background 0.25s ease;
+  }
+  .btn-primary:hover{ background: var(--red-soft); }
+  .btn-primary:disabled{ opacity:0.3; cursor: default; }
+  .btn-primary.full{ width:100%; }
+
+  .center-screen{ text-align:center; }
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fadeIn 0.45s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(6px);} to{ opacity:1; transform: translateY(0);} }
+
+  .intro-hero{ width: 92px; height: 92px; margin: 0 auto 16px; }
+  .intro-hero svg{ width:100%; height:100%; }
+
+  .perks{
+    display:flex; justify-content:center; gap:18px;
+    margin: 20px 0 26px;
+    font-size: 11.5px; letter-spacing:0.03em; opacity:0.7;
+    flex-wrap: wrap;
+  }
+
+  .field{
+    width:100%;
+    border: 1px solid var(--line);
+    background: transparent;
+    padding: 15px 16px;
+    font-family:'Jost', sans-serif;
+    font-size: 16px;
+    color: var(--body);
+    margin-bottom: 12px;
+  }
+  .field:focus{ outline:none; border-color: var(--red); }
+  .field::placeholder{ color: rgba(23,19,15,0.4); }
+
+  .microcopy{ font-size: 12.5px; opacity: 0.6; text-align:center; margin-top: 14px; line-height:1.5; }
+
+  .result-tag{ font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brass); text-align:center; margin-bottom: 12px; }
+  .result-name{
+    font-family:'Lora', serif; font-style: italic; font-weight: 500;
+    font-size: clamp(26px, 5.2vw, 34px); color: var(--red);
+    text-align:center; margin-bottom: 16px;
+  }
+  .result-desc{
+    font-size: 15.5px; line-height: 1.8; color: var(--body);
+    text-align:left; max-width: 420px; margin: 0 auto 26px;
+  }
+  .result-desc p{ margin-bottom: 14px; }
+  .result-desc strong{ color: var(--red-soft); font-weight: 600; }
+
+  .result-concept{
+    font-size: 14.5px; line-height: 1.6; color: var(--body); opacity: 0.8;
+    text-align:center; max-width: 360px; margin: 0 auto 20px;
+  }
+
+  .result-highlight{
+    font-family:'Lora', serif; font-style: italic; font-weight: 500;
+    font-size: 20px; line-height: 1.5; color: var(--brass);
+    text-align:center; max-width: 380px; margin: 0 auto 22px;
+    padding: 4px 0 18px;
+    border-bottom: 1px solid var(--brass-soft);
+  }
+
+  .product-tag{
+    display:inline-block;
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--brass); background: rgba(169,130,76,0.12);
+    padding: 3px 8px; margin-top: 4px;
+  }
+
+  .products-title{
+    font-family:'Lora', serif; font-style: italic; font-weight: 500;
+    font-size: 16px; color: var(--red);
+    text-align:center; margin-bottom: 14px;
+  }
+
+  .product-card{
+    display:flex; gap:18px; align-items:center;
+    border: 1px solid var(--line);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 10px rgba(23,19,15,0.05);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .product-card:hover{
+    box-shadow: 0 6px 18px rgba(23,19,15,0.09);
+    border-color: var(--brass);
+  }
+  .product-thumb{
+    width: 92px; height: 92px; flex-shrink:0;
+    background: radial-gradient(circle at 35% 30%, var(--cream) 0%, var(--cream-dim) 100%);
+    border: 1px solid var(--brass-soft);
+    display:flex; align-items:center; justify-content:center;
+    padding: 12px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
+  }
+  .product-thumb svg{ width:100%; height:100%; }
+  .product-info{ flex:1; text-align:left; }
+  .product-name{ font-size: 16.5px; margin-bottom: 4px; color: var(--body); font-weight: 500; }
+  .product-cta{
+    font-size: 12px; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--brass); text-decoration:none; white-space:nowrap;
+    border: 1px solid var(--brass); padding: 9px 15px;
+  }
+  .product-cta:hover{ background: var(--brass); color: var(--cream); }
+
+  .divider{ width: 36px; height: 1px; background: var(--brass); margin: 24px auto; }
+
+  .restart{
+    margin-top: 18px; font-size: 12.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--black); opacity: 0.5;
+    background:none; border:none; cursor:pointer;
+    text-decoration: underline; text-underline-offset: 4px;
+  }
+
+  .cta-stack{ display:flex; flex-direction:column; gap:12px; margin-top: 8px; }
+
+  .conversion-phrase{
+    font-family:'Lora', serif; font-style: italic; font-weight: 500;
+    font-size: 17px; color: var(--red);
+    text-align:center; max-width: 380px; margin: 0 auto 14px;
+  }
+
+  .coupon-box{
+    border: 1.5px dashed var(--brass);
+    background: rgba(169,130,76,0.07);
+    padding: 18px 20px;
+    margin: 6px auto 26px;
+    max-width: 340px;
+    text-align:center;
+  }
+  .coupon-label{
+    font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 10px;
+  }
+  .coupon-code-row{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+  }
+  .coupon-code{
+    font-family:'Lora', serif; font-style: italic; font-weight: 600;
+    font-size: 26px; color: var(--red); letter-spacing: 0.04em;
+  }
+  .coupon-copy{
+    background: var(--red); color: var(--cream); border:none;
+    font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 9px 16px; cursor:pointer;
+    transition: background 0.2s ease;
+  }
+  .coupon-copy:hover{ background: var(--red-soft); }
+  .coupon-copy.copied{ background: var(--brass); }
+
+  .btn-secondary{
+    background: transparent; color: var(--red); border: 1px solid var(--red);
+    padding: 13px 30px; font-size: 12.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor:pointer; text-decoration:none;
+    display:block;
+  }
+  .btn-secondary:hover{ background: rgba(53,5,10,0.06); }
+
+  @media (max-width: 480px){
+    .card{ padding: 32px 20px 28px; }
+    .product-card{ flex-direction:column; text-align:center; }
+    .product-info{ text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="badge-row" id="introBadge">
+    <span class="badge">✦ Cupom exclusivo ao final</span>
+  </div>
+
+  <div class="bracelet-wrap" id="braceletWrap"></div>
+  <div class="progress-label" id="progressLabel"></div>
+
+  <div class="card">
+
+    <!-- INTRO -->
+    <div class="screen active" id="screen-intro">
+      <div class="center-screen">
+        <div class="intro-hero" id="introHero"></div>
+        <div class="eyebrow">Vintg · Quiz</div>
+        <h1>Encontre seu relógio<br>ideal em 2 minutos 🤎💫</h1>
+        <p class="sub" style="color: var(--black); opacity: 0.72;">Baseado no seu estilo e rotina. Responda em 2 minutos e descubra qual peça combina com você.</p>
+        <div class="perks">
+          <span>⚡ Resultado imediato</span>
+          <span>⏱ 2 minutos</span>
+          <span>🎁 Cupom exclusivo</span>
+        </div>
+        <button class="btn-primary full" id="startBtn">Começar o quiz</button>
+      </div>
+    </div>
+
+    <!-- QUESTIONS render here -->
+    <div class="screen" id="screen-question">
+      <div class="eyebrow" id="qEyebrow"></div>
+      <h1 id="qTitle" style="font-size:21px;"></h1>
+      <div class="options" id="qOptions"></div>
+      <div class="nav">
+        <button class="btn-text" id="backBtn">Voltar</button>
+        <button class="btn-primary" id="nextBtn" disabled>Próxima</button>
+      </div>
+    </div>
+
+    <!-- LEAD CAPTURE (question 5) -->
+    <div class="screen" id="screen-capture">
+      <div class="center-screen">
+        <div class="eyebrow">Pergunta 5 de 11</div>
+        <h1 style="font-size:22px;">Tá quase! Antes de responder as últimas, conta pra gente 🤎</h1>
+        <input type="text" class="field" id="nameInput" placeholder="Seu nome">
+        <input type="email" class="field" id="emailInput" placeholder="Seu melhor e-mail">
+        <button class="btn-primary full" id="captureBtn" disabled>Continuar</button>
+        <p class="microcopy">Usamos seus dados só para enviar o resultado e o cupom exclusivo. Sem spam.</p>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="screen-result">
+      <div class="center-screen">
+        <div class="result-tag">O seu resultado</div>
+        <div class="result-name" id="resultName"></div>
+        <div class="result-concept" id="resultConcept"></div>
+        <div class="result-highlight" id="resultHighlight"></div>
+      </div>
+      <div class="result-desc" id="resultDesc"></div>
+
+      <div class="conversion-phrase">Seu cupom já está liberado — use e garanta desconto na sua peça 🤎</div>
+      <div class="coupon-box">
+        <div class="coupon-label">Seu cupom exclusivo</div>
+        <div class="coupon-code-row">
+          <span class="coupon-code" id="couponCodeResult">QUIZVINTG</span>
+          <button class="coupon-copy" id="copyCouponResultBtn">Copiar</button>
+        </div>
+      </div>
+
+      <div class="products-title">Sugestões alinhadas com o seu estilo</div>
+      <div id="productList"></div>
+      <div class="center-screen">
+        <button class="btn-primary full" id="revealCouponBtn" style="margin-top:14px;">Ver meu cupom</button>
+      </div>
+    </div>
+
+    <!-- FINAL CTA -->
+    <div class="screen" id="screen-final">
+      <div class="center-screen">
+        <div class="ornament" style="font-family:'Lora',serif;font-style:italic;font-size:26px;color:var(--brass);margin-bottom:14px;">✦</div>
+        <div class="eyebrow">Amou seu match? 😍</div>
+        <h1 style="font-size:24px;">Parece que foi feito<br>pra você, né? 👀✨</h1>
+        <p class="sub">Então já aproveita pra conhecer o seu de perto!</p>
+        <div class="coupon-box">
+          <div class="coupon-label">Seu cupom exclusivo</div>
+          <div class="coupon-code-row">
+            <span class="coupon-code" id="couponCode">QUIZVINTG</span>
+            <button class="coupon-copy" id="copyCouponBtn">Copiar</button>
+          </div>
+        </div>
+        <div class="cta-stack">
+          <a class="btn-primary full" id="ctaProduct" href="#" target="_top" style="text-decoration:none; text-align:center; display:block;">Ver relógios →</a>
+          <a class="btn-secondary" id="ctaVip" href="#" target="_top">Grupo VIP Vintg</a>
+        </div>
+        <button class="restart" id="restartBtn">Refazer o quiz</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* =========================================================
+     CONTEÚDO REAL DO QUIZ VINTG
+     ========================================================= */
+
+  // Scored questions (pontuam para o perfil A/B/C/D)
+  const scoredQuestions = [
+    { eyebrow: "Pergunta 1 de 11", title: "👀 Como suas amigas descreveriam seu estilo?",
+      options: [
+        ["a","Clássica e elegante: amo um pretinho básico bem feito","A"],
+        ["b","Moderna e ousada: gosto de peças que chamam atenção","B"],
+        ["c","Minimalista e certeira: menos é mais, sempre","A"],
+        ["d","Romântica e feminina: adoro detalhes delicados","D"],
+      ]},
+    { eyebrow: "Pergunta 2 de 11", title: "Onde você mais usa acessórios?",
+      options: [
+        ["a","No trabalho / dia a dia profissional","A"],
+        ["b","Em festas e eventos","B"],
+        ["c","Uso o tempo todo, não tiro nem pra dormir","C"],
+        ["d","Em ocasiões especiais e encontros","D"],
+      ]},
+    { eyebrow: "Pergunta 3 de 11", title: "Qual paleta de cores te representa mais quando falamos de acessórios?",
+      options: [
+        ["a","Dourado e tons quentes","B"],
+        ["b","Prata e tons frios","A"],
+        ["c","Mix de prata e dourado","A"],
+        ["d","Preto ou marrom","C"],
+      ]},
+    { eyebrow: "Pergunta 4 de 11", title: "No pulso, você prefere:",
+      options: [
+        ["a","Delicado e discreto","D"],
+        ["b","Médio (presente mas sem exagero)","A"],
+        ["c","Grande e marcante (statement piece)","B"],
+        ["d","Tanto faz, o design que importa","C"],
+      ]},
+    // pergunta 5 = captação de lead, tratada à parte
+    { eyebrow: "Pergunta 6 de 11", title: "💃 Em qual momento do dia você capricha mais nos acessórios?",
+      options: [
+        ["a","De manhã, já saio pronta de casa","A"],
+        ["b","Happy hour e noite (é quando brilho 🤩)","B"],
+        ["c","Final de semana, nos passeios e brunches","C"],
+        ["d","Sempre, acessórios 24h por dia","D"],
+      ]},
+    { eyebrow: "Pergunta 7 de 11", title: "Como você quer se sentir ao colocar seu relógio?",
+      options: [
+        ["a","Poderosa e sofisticada","B"],
+        ["b","Leve e elegante, sem esforço","A"],
+        ["c","Única, como se a peça contasse uma história","C"],
+        ["d","Feminina e encantadora","D"],
+      ]},
+    { eyebrow: "Pergunta 8 de 11", title: "Como você costuma escolher um acessório novo?",
+      options: [
+        ["a","Procuro algo que combine com tudo que já tenho","A"],
+        ["b","Quero algo que eu ainda não tenha, quanto mais único, melhor","B"],
+        ["c","Me apaixono pelo design na hora, sem pensar muito","C"],
+        ["d","Pesquiso bastante antes, presto atenção em cada detalhe","D"],
+      ]},
+    { eyebrow: "Pergunta 9 de 11", title: "Como é o seu guarda-roupa?",
+      options: [
+        ["a","Básico mas arrumado (pretinho básico e tons neutros)","A"],
+        ["b","Colorido e ousado (cores vibrantes, looks monocromáticos)","B"],
+        ["c","Despojado e casual (jeans, camisetas, looks confortáveis)","C"],
+        ["d","Romântico e delicado (estampas, florais, rendas)","D"],
+      ]},
+  ];
+
+  // Perguntas de segmentação — não pontuam para o resultado (conforme sua tabela)
+  const infoQuestions = [
+    { eyebrow: "Pergunta 10 de 11", title: "Qual a sua idade?",
+      options: [ ["a","Até 18 anos"], ["b","19-24 anos"], ["c","25-35 anos"], ["d","+36 anos"] ]},
+    { eyebrow: "Pergunta 11 de 11", title: "Qual dessas opções mais descreve seu momento de vida?",
+      options: [
+        ["a","Trabalho em empresa"], ["b","Estudo"],
+        ["c","Trabalho de forma autônoma ou empreendo"], ["d","Sou dona de casa"],
+      ]},
+  ];
+
+  // Fluxo completo: pergunta com score (0-3), captação (índice 4), pergunta com score (5-8), info (9-10)
+  const flow = [
+    scoredQuestions[0], scoredQuestions[1], scoredQuestions[2], scoredQuestions[3],
+    'capture',
+    scoredQuestions[4], scoredQuestions[5], scoredQuestions[6], scoredQuestions[7],
+    infoQuestions[0], infoQuestions[1],
+  ];
+
+  const results = {
+    A: {
+      name: "Clássica Atemporal",
+      concept: "Atemporal é o que não segue tendência, porque já nasceu certo. Esse gosto também aparece em alfaiataria, tons neutros e joias discretas.",
+      highlight: "Elegância pura, sem esforço 🤎",
+      body: [
+        "Você é daquelas que aposta no que nunca sai de moda.",
+        "O **Belir** é o best seller da Vintg e foi feito pra você: sabe aquela peça que resolve qualquer look? Do trabalho ao jantar, ele é o **coringa perfeito** pro seu pulso.",
+        "Se preferir algo ainda mais icônico, o **Aure** é o clássico dos clássicos: design minimalista com aquele glamour discreto que complementa qualquer look 💫",
+      ],
+      products: [
+        { name: "Belir Prata e Dourado", tag: "Best seller", url: "https://www.vintg.com.br/produtos/belir-prata-e-dourado/" },
+        { name: "French", tag: "Coringa do look", url: "https://www.vintg.com.br/produtos/french/" },
+        { name: "Olir", tag: "Ícone minimalista", url: "https://www.vintg.com.br/produtos/olir1/" },
+      ]
+    },
+    B: {
+      name: "Ousada & Poderosa",
+      concept: "Ousadia é presença: peças statement, cores fortes, texturas que chamam atenção. Combina com estampas marcantes, salto alto e joias de destaque.",
+      highlight: "Suas peças são marcantes, sexy e cheias de poder 🤭",
+      body: [
+        "Você gosta de chegar chegando, e seus acessórios fazem o mesmo.",
+        "🌪 O **Dorè** é a nossa obra de arte: impossível passar despercebido. Sua pulseira é **super marcante** e charmosa.",
+        "Se quiser algo cool e fora da caixinha, o **Olir** entra com uma proposta moderna e diferente — o design lembra um bracelete, estiloso e impactante ✨",
+        "Ou então o **Prince Croco**: design imponente pra quem quer autoridade e estilo no pulso. Aqui, nada é básico. Tudo tem presença.",
+      ],
+      products: [
+        { name: "Dorè", tag: "Peça statement", url: "https://www.vintg.com.br/produtos/dore/" },
+        { name: "Ventzo", tag: "", url: "https://www.vintg.com.br/produtos/ventzo-25yqz/" },
+        { name: "Prince", tag: "Autoridade no pulso", url: "https://www.vintg.com.br/produtos/prince/" },
+      ]
+    },
+    C: {
+      name: "Vintage & Autêntica",
+      concept: "Vintage é carregar história — peças com alma, com origem. Esse olhar também aparece em garimpo, brechó, artesanato e objetos que contam uma história.",
+      highlight: "Peças com história e personalidade 🤎",
+      body: [
+        "Você valoriza isso em tudo que escolhe.",
+        "O **Vintage** é o relógio que mais traduz a essência da Vintg: design retrô, cheio de identidade, combina com quem não segue tendência, cria ✨",
+        "É aquele tipo de peça que as pessoas olham no seu pulso e perguntam de onde é 👀",
+        "Se preferir algo mais contemporâneo, mas com a mesma personalidade discreta, o **Camelita** é o seu match: linhas limpas, design minimalista e acabamento suave.",
+      ],
+      products: [
+        { name: "Vintage", tag: "Essência Vintg", url: "https://www.vintg.com.br/produtos/vintage/" },
+        { name: "Camelita", tag: "Design minimalista", url: "https://www.vintg.com.br/produtos/camelita/" },
+        { name: "Nuage", tag: "", url: "https://www.vintg.com.br/relogios/" },
+      ]
+    },
+    D: {
+      name: "Romântica & Delicada",
+      concept: "Romântico é cuidado com detalhe: rendas, tons pastel, joias delicadas. Combina com flores, texturas leves e ambientes aconchegantes.",
+      highlight: "Você repara nos detalhes 💐",
+      body: [
+        "No brilho certo, no acabamento, na delicadeza de cada peça.",
+        "O **Losanc** traz um charme leve e elegante, daqueles que combinam com tudo sem pesar. Super gracioso e sutil na medida certa.",
+        "O **Mini Gold** é minimalista e delicado, quase como uma extensão do seu estilo.",
+        "E o **Coeur**... puro encanto. Uma verdadeira obra de arte 🤍 Peças que não precisam chamar atenção, elas encantam naturalmente ✨",
+      ],
+      products: [
+        { name: "Losanc", tag: "Charme leve e gracioso", url: "https://www.vintg.com.br/produtos/losanc/" },
+        { name: "Aure", tag: "", url: "https://www.vintg.com.br/relogios/" },
+        { name: "Coeur", tag: "Puro encanto", url: "https://www.vintg.com.br/relogios/" },
+      ]
+    },
+  };
+
+  /* =========================================================
+     UTM — parâmetros para rastrear acessos vindos do quiz.
+     Ajuste utm_campaign/source se quiser segmentar diferente.
+     ========================================================= */
+  const UTM = "utm_source=quiz&utm_medium=site&utm_campaign=quiz_relogio_perfeito";
+  const VIP_LINK = "https://www.vintg.com.br/"; // TODO Carol: trocar pelo link real do grupo VIP
+
+  function withUTM(url, extra){
+    const sep = url.includes('?') ? '&' : '?';
+    return `${url}${sep}${UTM}${extra ? '&utm_content=' + extra : ''}`;
+  }
+
+  /* =========================================================
+     Ilustrações (linha fina, tons da marca)
+     ========================================================= */
+  function metalWatchSVG(){
+    return `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 8h20v14H40z" stroke="#A9824C" stroke-width="1.6"/>
+      <path d="M40 78h20v14H40z" stroke="#A9824C" stroke-width="1.6"/>
+      <line x1="43" y1="14" x2="43" y2="20" stroke="#A9824C" stroke-width="1"/>
+      <line x1="50" y1="14" x2="50" y2="20" stroke="#A9824C" stroke-width="1"/>
+      <line x1="57" y1="14" x2="57" y2="20" stroke="#A9824C" stroke-width="1"/>
+      <line x1="43" y1="80" x2="43" y2="86" stroke="#A9824C" stroke-width="1"/>
+      <line x1="50" y1="80" x2="50" y2="86" stroke="#A9824C" stroke-width="1"/>
+      <line x1="57" y1="80" x2="57" y2="86" stroke="#A9824C" stroke-width="1"/>
+      <circle cx="50" cy="50" r="26" stroke="#35050A" stroke-width="2"/>
+      <circle cx="50" cy="50" r="20" stroke="#A9824C" stroke-width="1"/>
+      <line x1="50" y1="50" x2="50" y2="36" stroke="#35050A" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="50" y1="50" x2="60" y2="53" stroke="#35050A" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="2" fill="#35050A"/>
+      <rect x="75" y="46" width="5" height="8" rx="1" stroke="#35050A" stroke-width="1.4"/>
+    </svg>`;
+  }
+  function leatherWatchSVG(){
+    return `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 6 C40 6 38 10 38 24 L38 30 L62 30 L62 24 C62 10 60 6 56 6 Z" stroke="#A9824C" stroke-width="1.6"/>
+      <path d="M44 94 C40 94 38 90 38 76 L38 70 L62 70 L62 76 C62 90 60 94 56 94 Z" stroke="#A9824C" stroke-width="1.6"/>
+      <circle cx="50" cy="50" r="26" stroke="#35050A" stroke-width="2"/>
+      <circle cx="50" cy="50" r="20" stroke="#A9824C" stroke-width="1"/>
+      <line x1="50" y1="50" x2="50" y2="37" stroke="#35050A" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="50" y1="50" x2="42" y2="56" stroke="#35050A" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="2" fill="#35050A"/>
+      <rect x="75" y="46" width="5" height="8" rx="1" stroke="#35050A" stroke-width="1.4"/>
+    </svg>`;
+  }
+  function braceletWatchSVG(){
+    return `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 12 C36 6 44 4 50 4 C56 4 64 6 70 12" stroke="#A9824C" stroke-width="1.6"/>
+      <path d="M30 88 C36 94 44 96 50 96 C56 96 64 94 70 88" stroke="#A9824C" stroke-width="1.6"/>
+      <circle cx="50" cy="50" r="24" stroke="#35050A" stroke-width="2"/>
+      <circle cx="50" cy="50" r="18" stroke="#A9824C" stroke-width="1"/>
+      <line x1="50" y1="50" x2="50" y2="37" stroke="#35050A" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="50" y1="50" x2="59" y2="55" stroke="#35050A" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="2" fill="#35050A"/>
+      <circle cx="30" cy="12" r="2.4" fill="#A9824C"/>
+      <circle cx="70" cy="12" r="2.4" fill="#A9824C"/>
+      <circle cx="30" cy="88" r="2.4" fill="#A9824C"/>
+      <circle cx="70" cy="88" r="2.4" fill="#A9824C"/>
+    </svg>`;
+  }
+  function geometricWatchSVG(){
+    return `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 6 C40 6 38 10 38 24 L38 30 L62 30 L62 24 C62 10 60 6 56 6 Z" stroke="#A9824C" stroke-width="1.4"/>
+      <path d="M44 94 C40 94 38 90 38 76 L38 70 L62 70 L62 76 C62 90 60 94 56 94 Z" stroke="#A9824C" stroke-width="1.4"/>
+      <rect x="30" y="30" width="40" height="40" transform="rotate(45 50 50)" stroke="#35050A" stroke-width="2"/>
+      <rect x="36" y="36" width="28" height="28" transform="rotate(45 50 50)" stroke="#A9824C" stroke-width="0.9"/>
+      <line x1="50" y1="50" x2="50" y2="39" stroke="#35050A" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="50" y1="50" x2="43" y2="55" stroke="#35050A" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="1.8" fill="#35050A"/>
+    </svg>`;
+  }
+  // A = metal(clássica) | B = couro marcante(ousada) | C = couro autêntico(vintage) | D = metal delicado(romântica)
+  const profileIcon = { A: metalWatchSVG, B: leatherWatchSVG, C: leatherWatchSVG, D: metalWatchSVG };
+
+  // Ícone específico por modelo — quando não informado, cai no ícone padrão do perfil
+  const productIcon = {
+    "Belir Prata e Dourado": metalWatchSVG,
+    "French": leatherWatchSVG,
+    "Olir": braceletWatchSVG,
+    "Dorè": braceletWatchSVG,
+    "Ventzo": metalWatchSVG,
+    "Prince": leatherWatchSVG,
+    "Vintage": leatherWatchSVG,
+    "Camelita": leatherWatchSVG,
+    "Nuage": metalWatchSVG,
+    "Losanc": geometricWatchSVG,
+    "Aure": geometricWatchSVG,
+    "Coeur": geometricWatchSVG,
+  };
+
+  function mdBold(text){
+    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  document.getElementById('introHero').innerHTML = metalWatchSVG();
+
+  /* =========================================================
+     Estado e navegação
+     ========================================================= */
+  let current = 0;              // índice dentro de `flow`
+  let answers = {};             // respostas por índice
+  let scores = { A:0, B:0, C:0, D:0 };
+  const total = flow.length;
+
+  function buildBracelet(){
+    const wrap = document.getElementById('braceletWrap');
+    wrap.innerHTML = '';
+    for(let i=0; i<total; i++){
+      const d = document.createElement('div');
+      d.className = 'link';
+      d.id = 'link-' + i;
+      wrap.appendChild(d);
+    }
+  }
+
+  function updateBracelet(){
+    for(let i=0; i<total; i++){
+      const el = document.getElementById('link-' + i);
+      el.classList.toggle('filled', i < current);
+      el.classList.toggle('current', i === current);
+    }
+    document.getElementById('progressLabel').textContent = `Pergunta ${current+1} de ${total}`;
+  }
+
+  function startQuiz(){
+    buildBracelet();
+    document.getElementById('introBadge').style.display = 'none';
+    document.getElementById('screen-intro').classList.remove('active');
+    document.getElementById('braceletWrap').classList.add('active');
+    document.getElementById('progressLabel').classList.add('active');
+    renderStep();
+  }
+
+  function renderStep(){
+    updateBracelet();
+    const step = flow[current];
+    document.getElementById('screen-question').classList.remove('active');
+    document.getElementById('screen-capture').classList.remove('active');
+
+    if(step === 'capture'){
+      document.getElementById('screen-capture').classList.add('active');
+      document.getElementById('nameInput').value = answers[current]?.name || '';
+      document.getElementById('emailInput').value = answers[current]?.email || '';
+      validateCapture();
+      return;
+    }
+
+    document.getElementById('screen-question').classList.add('active');
+    document.getElementById('qEyebrow').textContent = step.eyebrow;
+    document.getElementById('qTitle').textContent = step.title;
+    const optWrap = document.getElementById('qOptions');
+    optWrap.innerHTML = '';
+    step.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option' + (answers[current]===i ? ' selected' : '');
+      btn.innerHTML = `<span class="option-icon">${opt[0]}</span><span>${opt[1]}</span>`;
+      btn.onclick = () => selectOption(i);
+      optWrap.appendChild(btn);
+    });
+    document.getElementById('backBtn').disabled = current === 0;
+    document.getElementById('nextBtn').textContent = current === total - 1 ? 'Ver resultado' : 'Próxima';
+    document.getElementById('nextBtn').disabled = answers[current] === undefined;
+  }
+
+  function selectOption(i){
+    answers[current] = i;
+    renderStep();
+  }
+
+  function validateCapture(){
+    const name = document.getElementById('nameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const ok = name.length > 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    document.getElementById('captureBtn').disabled = !ok;
+    if(ok){ answers[current] = { name, email }; }
+  }
+
+  function goNext(){
+    const step = flow[current];
+    if(step === 'capture'){
+      if(!answers[current]) return;
+    } else if(answers[current] === undefined){
+      return;
+    }
+    if(current === total - 1){
+      computeResult();
+    } else {
+      current++;
+      renderStep();
+    }
+  }
+
+  function goBack(){
+    if(current === 0) return;
+    current--;
+    renderStep();
+  }
+
+  function computeResult(){
+    scores = { A:0, B:0, C:0, D:0 };
+    let q7Profile = null;
+    flow.forEach((step, idx) => {
+      if(step === 'capture' || infoQuestions.includes(step)) return;
+      const ansIdx = answers[idx];
+      if(ansIdx === undefined) return;
+      const profile = step.options[ansIdx][2];
+      scores[profile]++;
+      if(step.title.startsWith('Como você quer se sentir')) q7Profile = profile;
+    });
+    let best = 'A', bestScore = -1;
+    Object.keys(scores).forEach(k => {
+      if(scores[k] > bestScore){ best = k; bestScore = scores[k]; }
+    });
+    const tied = Object.keys(scores).filter(k => scores[k] === bestScore);
+    if(tied.length > 1 && q7Profile && tied.includes(q7Profile)){
+      best = q7Profile;
+    }
+    showResult(best);
+  }
+
+  function submitQuizData(profileKey, profileName){
+    const leadData = answers[4] || {};
+    if(!leadData.email) return;
+
+    // Monta array com todas as respostas (título da pergunta + texto da resposta)
+    const answersList = [];
+    flow.forEach((step, idx) => {
+      if(step === 'capture') {
+        answersList.push({ question: 'Nome', answer: leadData.name || '' });
+        answersList.push({ question: 'E-mail', answer: leadData.email || '' });
+        return;
+      }
+      const ansIdx = answers[idx];
+      if(ansIdx === undefined) {
+        answersList.push({ question: step.title || 'Pergunta ' + (idx+1), answer: '' });
+        return;
+      }
+      const opt = step.options[ansIdx];
+      answersList.push({
+        question: step.title,
+        answer: opt ? opt[1] : ''
+      });
+    });
+
+    fetch('backend/submit.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: leadData.name || '',
+        email: leadData.email,
+        profileKey: profileKey,
+        profileName: profileName,
+        answers: answersList,
+      })
+    })
+    .then(res => {
+      if(!res.ok) console.warn('Quiz: falha ao salvar lead', res.status);
+      return res.json().catch(() => {});
+    })
+    .then(data => {
+      if(data && data.success) console.log('Quiz: lead salvo com sucesso!');
+    })
+    .catch(err => console.warn('Quiz: erro de rede ao salvar lead', err));
+  }
+
+  function showResult(profileKey){
+    document.getElementById('braceletWrap').classList.remove('active');
+    document.getElementById('progressLabel').classList.remove('active');
+    document.getElementById('screen-question').classList.remove('active');
+    document.getElementById('screen-capture').classList.remove('active');
+
+    const r = results[profileKey];
+    document.getElementById('resultName').textContent = r.name;
+    document.getElementById('resultConcept').textContent = r.concept;
+    document.getElementById('resultHighlight').textContent = r.highlight;
+    document.getElementById('resultDesc').innerHTML = r.body.map(p => `<p>${mdBold(p)}</p>`).join('');
+
+    const fallbackIcon = profileIcon[profileKey];
+    const list = document.getElementById('productList');
+    list.innerHTML = '';
+    r.products.forEach(p => {
+      const icon = (productIcon[p.name] || fallbackIcon)();
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <div class="product-thumb">${icon}</div>
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ''}
+        </div>
+        <a class="product-cta" href="${withUTM(p.url, profileKey)}" target="_top">Ver peça</a>
+      `;
+      list.appendChild(card);
+    });
+
+    document.getElementById('ctaProduct').href = withUTM("https://www.vintg.com.br/", 'ver_relogios_' + profileKey);
+    document.getElementById('ctaProduct').textContent = 'Ver relógios →';
+    document.getElementById('ctaVip').href = withUTM(VIP_LINK, 'vip_' + profileKey);
+
+    document.getElementById('screen-result').classList.add('active');
+
+    // Envia os dados para o backend
+    submitQuizData(profileKey, r.name);
+  }
+
+  function goToFinal(){
+    document.getElementById('screen-result').classList.remove('active');
+    document.getElementById('screen-final').classList.add('active');
+  }
+
+  function restartQuiz(){
+    current = 0;
+    answers = {};
+    document.getElementById('nameInput').value = '';
+    document.getElementById('emailInput').value = '';
+    document.getElementById('screen-final').classList.remove('active');
+    document.getElementById('introBadge').style.display = 'block';
+    document.getElementById('screen-intro').classList.add('active');
+  }
+
+  /* =========================================================
+     Bindings de clique (addEventListener, mais confiável
+     que onclick inline em alguns navegadores/preview)
+     ========================================================= */
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+  document.getElementById('backBtn').addEventListener('click', goBack);
+  document.getElementById('nextBtn').addEventListener('click', goNext);
+  document.getElementById('captureBtn').addEventListener('click', goNext);
+  document.getElementById('revealCouponBtn').addEventListener('click', goToFinal);
+  document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+  document.getElementById('nameInput').addEventListener('input', validateCapture);
+  document.getElementById('emailInput').addEventListener('input', validateCapture);
+  document.getElementById('copyCouponBtn').addEventListener('click', function(){
+    const code = document.getElementById('couponCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById('copyCouponBtn');
+      btn.textContent = 'Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  });
+  document.getElementById('copyCouponResultBtn').addEventListener('click', function(){
+    const code = document.getElementById('couponCodeResult').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById('copyCouponResultBtn');
+      btn.textContent = 'Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  });
+</script>
+
+</body>
+</html>
